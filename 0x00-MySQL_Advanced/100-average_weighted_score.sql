@@ -1,35 +1,20 @@
--- Task Description: Create a stored procedure ComputeAverageWeightedScoreForUser that computes and stores the average weighted score for a student.
-
--- Create the stored procedure
+-- 100-average_weighted_score.sql.
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
 DELIMITER //
-CREATE PROCEDURE ComputeAverageWeightedScoreForUser(
-    IN p_user_id INT
-)
+
+CREATE PROCEDURE ComputeAverageWeightedScoreForUser(IN user_id INT)
 BEGIN
-    DECLARE v_total_weighted_score FLOAT;
-    DECLARE v_total_weight INT;
+    DECLARE weighted_avg FLOAT;
 
-    -- Compute the total weighted score and total weight for the user
-    SELECT
-        SUM(score * weight) INTO v_total_weighted_score,
-        SUM(weight) INTO v_total_weight
-    FROM corrections
-    JOIN projects ON corrections.project_id = projects.id
-    WHERE user_id = p_user_id;
+    SELECT SUM(C.score * P.weight) / SUM(P.weight)
+    INTO weighted_avg
+    FROM corrections AS C
+    JOIN projects AS P ON C.project_id = P.id
+    WHERE C.user_id = user_id;
 
-    -- Update the user's average_score
-    IF v_total_weight > 0 THEN
-        UPDATE users
-        SET average_score = v_total_weighted_score / v_total_weight
-        WHERE id = p_user_id;
-    ELSE
-        UPDATE users
-        SET average_score = 0
-        WHERE id = p_user_id;
-    END IF;
-END;
-//
+    UPDATE users
+    SET average_score = weighted_avg
+    WHERE id = user_id;
+END //
+
 DELIMITER ;
-
--- Show procedures to confirm creation
-SHOW PROCEDURE STATUS;
