@@ -1,25 +1,31 @@
--- Task Description: Create a stored procedure AddBonus that adds a new correction for a student
+-- Task Description: Create a stored procedure ComputeAverageScoreForUser that computes and stores the average score for a student
 
 -- Create the stored procedure
 DELIMITER //
-CREATE PROCEDURE AddBonus(
-    IN p_user_id INT,
-    IN p_project_name VARCHAR(255),
-    IN p_score INT
+CREATE PROCEDURE ComputeAverageScoreForUser(
+    IN p_user_id INT
 )
 BEGIN
-    DECLARE v_project_id INT;
+    DECLARE v_total_score FLOAT;
+    DECLARE v_total_projects INT;
 
-    -- Check if the project exists, if not, create it
-    SELECT id INTO v_project_id FROM projects WHERE name = p_project_name;
-    
-    IF v_project_id IS NULL THEN
-        INSERT INTO projects (name) VALUES (p_project_name);
-        SET v_project_id = LAST_INSERT_ID();
+    -- Compute the total score and total projects for the user
+    SELECT
+        SUM(score) INTO v_total_score,
+        COUNT(DISTINCT project_id) INTO v_total_projects
+    FROM corrections
+    WHERE user_id = p_user_id;
+
+    -- Update the user's average_score
+    IF v_total_projects > 0 THEN
+        UPDATE users
+        SET average_score = v_total_score / v_total_projects
+        WHERE id = p_user_id;
+    ELSE
+        UPDATE users
+        SET average_score = 0
+        WHERE id = p_user_id;
     END IF;
-
-    -- Add the correction
-    INSERT INTO corrections (user_id, project_id, score) VALUES (p_user_id, v_project_id, p_score);
 END;
 //
 DELIMITER ;
