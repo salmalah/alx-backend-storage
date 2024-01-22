@@ -6,26 +6,30 @@ stats about Nginx logs stored in MongoDB
 
 from pymongo import MongoClient
 
-def print_logs_stats(collection):
+
+METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+
+
+def log_stats(mongo_collection, option=None):
     """
     Provide some stats about Nginx logs stored in MongoDB
     """
-    total_logs = collection.count_documents({})
+    it = {}
+    if option:
+        v = mongo_collection.count_documents(
+            {"method": {"$regex": option}})
+        print(f"\tmethod {option}: {v}")
+        return
 
-    print(f"{total_logs} logs")
-    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-    for method in methods:
-        count = collection.count_documents({"method": method})
-        print(f"    method {method}: {count}")
-    status_check_count = collection.count_documents({"method": "GET", "path": "/status"})
-    print(f"{status_check_count} status check")
+    reslt = mongo_collection.count_documents(it)
+    print(f"{reslt} logs")
+    print("Methods:")
+    for method in METHODS:
+        log_stats(nginx_collection, method)
+    check_status = mongo_collection.count_documents({"path": "/status"})
+    print(f"{check_status} status check")
 
-def main():
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client.logs
-    collection = db.nginx
-
-    print_logs_stats(collection)
 
 if __name__ == "__main__":
-    main()
+    nginx_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
+    log_stats(nginx_collection)
