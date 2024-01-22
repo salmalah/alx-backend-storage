@@ -19,4 +19,4 @@ def top_students(mongo_collection):
     ]
     sorted_students = collection.aggregate(pipeline)
 
-    return sorted_students
+  return sorted_students
