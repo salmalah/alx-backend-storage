@@ -15,7 +15,7 @@ def count_calls(method: Callable) -> Callable:
     @wraps(method)
     def invoke_and_count(self, *args, **kwargs) -> Any:
         """
-        Invokes the method after incrementing 
+        Invokes the method after incrementing
         """
         if isinstance(self._redis, redis.Redis):
             self._redis.incr(method.__qualname__)
