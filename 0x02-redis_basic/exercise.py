@@ -32,16 +32,17 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, None]:
+    def get(self, key: str, fn: Callable = None)
+    -> Union[str, bytes, int, None]:
         """
-        Retrieve data from Redis using the provided key and apply the optional conversion function.
+        Retrieve data from Redis using the provided key and apply
 
         Args:
-            key (str): The key used to retrieve data from Redis.
-            fn (Callable, optional): The optional conversion function to apply to the retrieved data.
+            key (str): The key used
+            fn (Callable, optional): The optional conversion function to apply
 
         Returns:
-            Union[str, bytes, int, None]: The retrieved data, optionally converted by the provided function.
+            Union[str, bytes, int, None]: The retrieved data
         """
         data = self._redis.get(key)
         if data is not None and fn is not None:
