@@ -72,7 +72,7 @@ class Cache:
             Union[int, None]: The retrieved data as an integer.
         """
         return self.get(key, fn=int)
-    
+        
 # Example usage in main.py
 if __name__ == "__main__":
     cache = Cache()
