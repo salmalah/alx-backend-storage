@@ -6,6 +6,7 @@ from typing import Union
 import redis
 import uuid
 
+
 class Cache:
     """
     This is Cache class using Redis
