@@ -83,7 +83,8 @@ class Cache:
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
-        Store the input data in Redis using a random key (UUID) and return the key
+        Store the input data in Redis using a random
+        key (UUID) and return the key
         """
         data_key = str(uuid.uuid4())
         self._redis.set(data_key, data)
