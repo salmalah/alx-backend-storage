@@ -74,8 +74,8 @@ class Cache:
         return self.get(key, fn=int)
 
 # Example usage in main.py
+
 if __name__ == "__main__":
-    
     cache = Cache()
 
     TEST_CASES = {
