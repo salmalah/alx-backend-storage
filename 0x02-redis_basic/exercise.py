@@ -31,12 +31,42 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-# Example usage in main.py
-if __name__ == "__main__":
-    cache = Cache()
-    data = b"hello"
-    key = cache.store(data)
-    print(key)
+    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, None]:
+        """
+        Retrieve data from Redis using the provided key and apply the optional conversion function.
 
-    local_redis = redis.Redis()
-    print(local_redis.get(key))
+        Args:
+            key (str): The key used to retrieve data from Redis.
+            fn (Callable, optional): The optional conversion function to apply to the retrieved data.
+
+        Returns:
+            Union[str, bytes, int, None]: The retrieved data, optionally converted by the provided function.
+        """
+        data = self._redis.get(key)
+        if data is not None and fn is not None:
+            return fn(data)
+        return data
+
+    def get_str(self, key: str) -> Union[str, None]:
+        """
+        Retrieve and convert data from Redis to a string.
+
+        Args:
+            key (str): The key used to retrieve data from Redis.
+
+        Returns:
+            Union[str, None]: The retrieved data as a string.
+        """
+        return self.get(key, fn=lambda d: d.decode("utf-8"))
+
+    def get_int(self, key: str) -> Union[int, None]:
+        """
+        Retrieve and convert data from Redis to an integer.
+
+        Args:
+            key (str): The key used to retrieve data from Redis.
+
+        Returns:
+            Union[int, None]: The retrieved data as an integer.
+        """
+        return self.get(key, fn=int)
